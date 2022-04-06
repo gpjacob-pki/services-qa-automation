@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testng-results skipped="0" failed="0" ignored="0" total="4" passed="4">
+  <reporter-output>
+  </reporter-output>
+  <suite name="Default suite" duration-ms="295164" started-at="2022-02-18T12:32:02 IST" finished-at="2022-02-18T12:36:57 IST">
+    <groups>
+      <group name="regression">
+        <method signature="InventoryValidation.configchecker2(java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String)[pri:0, instance:test.Regressiontest.InventoryValidation@3ec300f1]" name="configchecker2" class="test.Regressiontest.InventoryValidation"/>
+        <method signature="InventoryValidation.LoginPositive(java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String)[pri:0, instance:test.Regressiontest.InventoryValidation@3ec300f1]" name="LoginPositive" class="test.Regressiontest.InventoryValidation"/>
+      </group> <!-- regression -->
+    </groups>
+    <test name="Default test" duration-ms="295164" started-at="2022-02-18T12:32:02 IST" finished-at="2022-02-18T12:36:57 IST">
+      <class name="test.Regressiontest.InventoryValidation">
+        <test-method status="PASS" signature="configchecker2(java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String)[pri:0, instance:test.Regressiontest.InventoryValidation@3ec300f1]" name="configchecker2" duration-ms="119709" started-at="2022-02-18T12:32:03 IST" data-provider="UserData" finished-at="2022-02-18T12:34:02 IST">
+          <params>
+            <param index="0">
+              <value>
+                <![CDATA[sarath.kumar@calpinetech.com]]>
+              </value>
+            </param>
+            <param index="1">
+              <value>
+                <![CDATA[123Calpine*]]>
+              </value>
+            </param>
+            <param index="2">
+              <value>
+                <![CDATA[System Admin]]>
+              </value>
+            </param>
+            <param index="3">
+              <value>
+                <![CDATA[NA]]>
+              </value>
+            </param>
+            <param index="4">
+              <value>
+                <![CDATA[Test]]>
+              </value>
+            </param>
+            <param index="5">
+              <value>
+                <![CDATA[NA]]>
+              </value>
+            </param>
+            <param index="6">
+              <value>
+                <![CDATA[NA]]>
+              </value>
+            </param>
+            <param index="7">
+              <value>
+                <![CDATA[Project 4]]>
+              </value>
+            </param>
+            <param index="8">
+              <value>
+                <![CDATA[Department 34]]>
+              </value>
+            </param>
+            <param index="9">
+              <value>
+                <![CDATA[NA]]>
+              </value>
+            </param>
+            <param index="10">
+              <value>
+                <![CDATA[1]]>
+              </value>
+            </param>
+          </params>
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- configchecker2 -->
+        <test-method status="PASS" signature="closedriver()[pri:0, instance:test.Regressiontest.InventoryValidation@3ec300f1]" name="closedriver" is-config="true" duration-ms="114" started-at="2022-02-18T12:34:02 IST" finished-at="2022-02-18T12:34:03 IST">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- closedriver -->
+        <test-method status="PASS" signature="configchecker2(java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String)[pri:0, instance:test.Regressiontest.InventoryValidation@3ec300f1]" name="configchecker2" duration-ms="5" started-at="2022-02-18T12:34:03 IST" data-provider="UserData" finished-at="2022-02-18T12:34:03 IST">
+          <params>
+            <param index="0">
+              <value>
+                <![CDATA[sarathkumar.k@perkinelmer.com]]>
+              </value>
+            </param>
+            <param index="1">
+              <value>
+                <![CDATA[123Calpine*]]>
+              </value>
+            </param>
+            <param index="2">
+              <value>
+                <![CDATA[Standard User]]>
+              </value>
+            </param>
+            <param index="3">
+              <value>
+                <![CDATA[General Chemistry Template]]>
+              </value>
+            </param>
+            <param index="4">
+              <value>
+                <![CDATA[Test]]>
+              </value>
+            </param>
+            <param index="5">
+              <value>
+                <![CDATA[NA]]>
+              </value>
+            </param>
+            <param index="6">
+              <value>
+                <![CDATA[1]]>
+              </value>
+            </param>
+            <param index="7">
+              <value>
+                <![CDATA[Project 4]]>
+              </value>
+            </param>
+            <param index="8">
+              <value>
+                <![CDATA[Department 34]]>
+              </value>
+            </param>
+            <param index="9">
+              <value>
+                <![CDATA[SK-54 not a parent one]]>
+              </value>
+            </param>
+            <param index="10">
+              <value>
+                <![CDATA[2]]>
+              </value>
+            </param>
+          </params>
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- configchecker2 -->
+        <test-method status="PASS" signature="closedriver()[pri:0, instance:test.Regressiontest.InventoryValidation@3ec300f1]" name="closedriver" is-config="true" duration-ms="23" started-at="2022-02-18T12:34:03 IST" finished-at="2022-02-18T12:34:03 IST">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- closedriver -->
+        <test-method status="PASS" signature="LoginPositive(java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String)[pri:0, instance:test.Regressiontest.InventoryValidation@3ec300f1]" name="LoginPositive" duration-ms="92404" started-at="2022-02-18T12:34:03 IST" data-provider="UserData" depends-on-methods="test.Regressiontest.InventoryValidation.configchecker2" finished-at="2022-02-18T12:35:35 IST">
+          <params>
+            <param index="0">
+              <value>
+                <![CDATA[sarath.kumar@calpinetech.com]]>
+              </value>
+            </param>
+            <param index="1">
+              <value>
+                <![CDATA[123Calpine*]]>
+              </value>
+            </param>
+            <param index="2">
+              <value>
+                <![CDATA[System Admin]]>
+              </value>
+            </param>
+            <param index="3">
+              <value>
+                <![CDATA[NA]]>
+              </value>
+            </param>
+            <param index="4">
+              <value>
+                <![CDATA[Test]]>
+              </value>
+            </param>
+            <param index="5">
+              <value>
+                <![CDATA[NA]]>
+              </value>
+            </param>
+            <param index="6">
+              <value>
+                <![CDATA[NA]]>
+              </value>
+            </param>
+            <param index="7">
+              <value>
+                <![CDATA[Project 4]]>
+              </value>
+            </param>
+            <param index="8">
+              <value>
+                <![CDATA[Department 34]]>
+              </value>
+            </param>
+            <param index="9">
+              <value>
+                <![CDATA[NA]]>
+              </value>
+            </param>
+            <param index="10">
+              <value>
+                <![CDATA[1]]>
+              </value>
+            </param>
+          </params>
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- LoginPositive -->
+        <test-method status="PASS" signature="closedriver()[pri:0, instance:test.Regressiontest.InventoryValidation@3ec300f1]" name="closedriver" is-config="true" duration-ms="138" started-at="2022-02-18T12:35:35 IST" finished-at="2022-02-18T12:35:35 IST">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- closedriver -->
+        <test-method status="PASS" signature="LoginPositive(java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String)[pri:0, instance:test.Regressiontest.InventoryValidation@3ec300f1]" name="LoginPositive" duration-ms="81998" started-at="2022-02-18T12:35:35 IST" data-provider="UserData" depends-on-methods="test.Regressiontest.InventoryValidation.configchecker2" finished-at="2022-02-18T12:36:57 IST">
+          <params>
+            <param index="0">
+              <value>
+                <![CDATA[sarathkumar.k@perkinelmer.com]]>
+              </value>
+            </param>
+            <param index="1">
+              <value>
+                <![CDATA[123Calpine*]]>
+              </value>
+            </param>
+            <param index="2">
+              <value>
+                <![CDATA[Standard User]]>
+              </value>
+            </param>
+            <param index="3">
+              <value>
+                <![CDATA[General Chemistry Template]]>
+              </value>
+            </param>
+            <param index="4">
+              <value>
+                <![CDATA[Test]]>
+              </value>
+            </param>
+            <param index="5">
+              <value>
+                <![CDATA[NA]]>
+              </value>
+            </param>
+            <param index="6">
+              <value>
+                <![CDATA[1]]>
+              </value>
+            </param>
+            <param index="7">
+              <value>
+                <![CDATA[Project 4]]>
+              </value>
+            </param>
+            <param index="8">
+              <value>
+                <![CDATA[Department 34]]>
+              </value>
+            </param>
+            <param index="9">
+              <value>
+                <![CDATA[SK-54 not a parent one]]>
+              </value>
+            </param>
+            <param index="10">
+              <value>
+                <![CDATA[2]]>
+              </value>
+            </param>
+          </params>
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- LoginPositive -->
+        <test-method status="PASS" signature="closedriver()[pri:0, instance:test.Regressiontest.InventoryValidation@3ec300f1]" name="closedriver" is-config="true" duration-ms="114" started-at="2022-02-18T12:36:57 IST" finished-at="2022-02-18T12:36:57 IST">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- closedriver -->
+        <test-method status="PASS" signature="aftmeth2()[pri:0, instance:test.Regressiontest.InventoryValidation@3ec300f1]" name="aftmeth2" is-config="true" duration-ms="7" started-at="2022-02-18T12:36:57 IST" finished-at="2022-02-18T12:36:57 IST">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- aftmeth2 -->
+      </class> <!-- test.Regressiontest.InventoryValidation -->
+    </test> <!-- Default test -->
+  </suite> <!-- Default suite -->
+</testng-results>

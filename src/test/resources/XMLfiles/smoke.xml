@@ -1,0 +1,42 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+<suite name = "Parallel Testing Suite">
+   <test name = "Parallel Tests" parallel = "classes" thread-count = "3">
+    <groups>
+            <run>
+            
+                <include name = "smoke">
+                </include>
+                
+            </run>
+            
+        </groups>
+      
+    <classes>
+      
+         <!--
+        
+         		<class name = "test.Regressiontest.ValidatenewUserCreationSystemadmin" /> 
+         	 
+         	 <class name = "test.Regressiontest.Validatesharingandsigning" />
+         	 
+         	
+         	  
+         	  <class name = "test.Regressiontest.CreateSystemobjecttemplate" /> 
+         	  <class name = "test.Regressiontest.Aftersuite" /> 
+         	
+         		  <class name = "test.Regressiontest.CreateTableTemplate2" /> 
+         		<class name = "test.Regressiontest.PositivenegativeLoginScenario2" />
+         	<class name = "test.Regressiontest.UserDashboardiconvalidation2" /> 
+      
+          -->
+          
+         		<class name = "test.Regressiontest.Aftersuite" /> 
+         	
+         		  <class name = "test.Regressiontest.CreateTableTemplate" /> 
+         		<class name = "test.Regressiontest.PositivenegativeLoginScenario" />
+         	<class name = "test.Regressiontest.UserDashboardiconvalidation" /> 
+          	
+      </classes>
+      
+   </test>
+</suite>

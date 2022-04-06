@@ -1,0 +1,32 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+<suite name = "Parallel Testing Suite">
+
+   <test name = "Parallel Tests" parallel = "classes" thread-count = "3">
+   
+    <groups>
+            <run>
+            
+                <include name = "regression">
+                </include>
+                
+            </run>
+            
+     </groups>
+     
+      <classes>
+                     	
+         	<!--
+         	<class name = "test.Regressiontest.MaterialsActivationChecker" /> 
+         	<class name = "test.Regressiontest.ExternalActionsValidation" />  
+         	<class name = "test.Regressiontest.PositivenegativeLoginScenario" />  -->
+         	
+         	 <class name = "test.Regressiontest.Aftersuite" />  
+         	<class name = "test.Regressiontest.InventoryValidation" />
+         	
+      </classes>
+      
+      
+    
+   </test>
+   
+</suite>
