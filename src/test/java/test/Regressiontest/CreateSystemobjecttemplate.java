@@ -41,12 +41,13 @@ public class CreateSystemobjecttemplate extends BaseClass {
 		 
 		 if(runTestcase.equalsIgnoreCase("yes")) {
 		 	driver=chromeinitialization();
-	    	logger=extent.startTest("create sysytem object template for "+username);
+	    	logger=extent.startTest("create system object template for "+username);
 	    	login.geturl(driver);
 	    	wait= new WebDriverWait(driver, 180);
 	    	login.loginSignals(driver, logger, username, password, wait, "LoginPositive");	
 	    	login.verifySystemConfigDropdown(driver, logger, Usertype,wait);
-	    	if(Usertype.equalsIgnoreCase("Systemadmin")) {
+			 System.out.println("The usertype is "+Usertype);
+	    	if(Usertype.equalsIgnoreCase("System admin")) {
 	    		login.clickonSystemconfig(driver, logger, Usertype, wait);
 	    		String winHandleBefore=sysconfig.winhandlebefore(driver);
 	    		WebDriver switcheddriver=sysconfig.windowsswitch(driver);
@@ -55,7 +56,7 @@ public class CreateSystemobjecttemplate extends BaseClass {
 	    		   		
 	    		
 	    		Templatename=Templatename+Integer.toString(randomnumgenrator());
-	    		System.out.println("Random template name genrated is:"+Templatename);
+	    		System.out.println("Random template name generated is:"+Templatename);
 	    		sysconfig.clickontemplatecreation(switcheddriver, wait,templatetype,Templatename);
 	    		sysconfig.exptemplateFieldsValidationCreation(switcheddriver, wait,logger,field1,field1YorN,field2);
 	    		
