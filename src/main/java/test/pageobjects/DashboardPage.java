@@ -1,44 +1,31 @@
 package test.pageobjects;
 
-import java.awt.AWTException;
-import java.awt.Robot;
-import java.awt.Toolkit;
-import java.awt.datatransfer.StringSelection;
-import java.awt.event.KeyEvent;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
+import com.relevantcodes.extentreports.ExtentTest;
+import com.relevantcodes.extentreports.LogStatus;
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-
-import com.relevantcodes.extentreports.ExtentTest;
-import com.relevantcodes.extentreports.LogStatus;
-
 import test.Utility.BaseClass;
 
-public class Loginpage  extends BaseClass{
+import java.awt.*;
+import java.awt.datatransfer.StringSelection;
+import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.Map;
+
+public class DashboardPage extends BaseClass{
 	SystemConfigpage sysconfig=new SystemConfigpage();
 	//Authenticationpage 
-	By username=By.xpath("//input[@name='username']");
-	By password= By.xpath("//input[@name='password']");
-	By signinButton= By.xpath("//span[text()='Sign In']");
+
 	By namedisplay=By.xpath("//div[@class='h5 brown-neutral margin-none']");
 	By signout =By.xpath("//a[@id='logout'][text()='Sign Out']");
-	By failedloginpage=By.xpath("//span[text()='Invalid user name or password']");
 	By systemconfigbutton=By.xpath("//a[text()='System Configuration']");
 	By inventrybutton=By.xpath("//a[text()='Inventory']");
 	By browseInventory_Search=By.xpath("//div[contains(text(),'Browse Inventory')]");
-	
-	
-	
+
 	
 	//Dashborad icons
 	By Notebooksicon=By.xpath("//a[@id='notebooks']/i");
@@ -129,90 +116,6 @@ public class Loginpage  extends BaseClass{
 	
 	static String locationfieldsvalue="//div[@aria-label='menu-options']/a[text()='testvalue']";
 	//Loginpage loginpage=new Loginpage();
-	
-	//login scenario valid and invalid pass String method as LoginPositive or LoginNegative
-	public void loginSignals(WebDriver driver,ExtentTest logger,String usernamesignals,String passwordsignals,WebDriverWait wait,String method) throws InterruptedException {
-		driver.manage().window().maximize();
-		wait.until(ExpectedConditions.presenceOfElementLocated(username)).sendKeys(usernamesignals);
-		logger.log(LogStatus.PASS, "loginname "+usernamesignals+" entered successfully");
-		wait.until(ExpectedConditions.presenceOfElementLocated(password)).sendKeys(passwordsignals);
-		logger.log(LogStatus.PASS, "password for "+usernamesignals+" entered successfully");
-		wait.until(ExpectedConditions.presenceOfElementLocated(signinButton)).click();
-		logger.log(LogStatus.PASS, "siginbutton clicked successfully successfully");
-		
-		
-		if(method.equalsIgnoreCase("LoginPositive")) {
-			try {
-			
-			wait.until(ExpectedConditions.presenceOfElementLocated(Requestsicon));
-			wait.until(ExpectedConditions.presenceOfElementLocated(namedisplay));
-			String screenshotpath=BaseClass.addScreenshot(driver);
-			logger.log(LogStatus.INFO, logger.addScreenCapture(screenshotpath));
-			}catch(Exception e) {
-				
-				wait.until(ExpectedConditions.presenceOfElementLocated(namedisplay));
-				String screenshotpath=BaseClass.addScreenshot(driver);
-				logger.log(LogStatus.INFO, logger.addScreenCapture(screenshotpath));
-			}
-			logger.log(LogStatus.PASS, "Loginpage is loaded successfully for user "+usernamesignals);
-			//wait.until(ExpectedConditions.presenceOfElementLocated(signout)).click();
-			//logger.log(LogStatus.PASS, "Loggedout ");
-		}else if(method.equalsIgnoreCase("LoginNegative")) {
-			Boolean isPresent = driver.findElements(failedloginpage).size()>0;
-			if(isPresent) {
-				logger.log(LogStatus.PASS, "unauthorized user not logged in");
-			}else {
-				logger.log(LogStatus.FAIL, "unauthorized user allowed to log in");
-			}
-			
-		}
-		
-	}
-	
-	
-	
-//	public void loginSignals(WebDriver driver,ExtentTest logger,String usernamesignals,String passwordsignals,WebDriverWait wait,String method) throws InterruptedException {
-//		driver.manage().window().maximize();
-//		wait.until(ExpectedConditions.presenceOfElementLocated(username)).sendKeys(usernamesignals);
-//		logger.log(LogStatus.PASS, "loginname "+usernamesignals+" entered successfully");
-//		wait.until(ExpectedConditions.presenceOfElementLocated(password)).sendKeys(passwordsignals);
-//		logger.log(LogStatus.PASS, "password for "+usernamesignals+" entered successfully");
-//		wait.until(ExpectedConditions.presenceOfElementLocated(signinButton)).click();
-//		logger.log(LogStatus.PASS, "siginbutton clicked successfully successfully");
-//		
-//		
-//		if(method.equalsIgnoreCase("LoginPositive")) {
-//			
-//			boolean ispresent_requesticon=wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(Requestsicon)).size()>0;
-//			boolean ispresent_namedisplay=wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(namedisplay)).size()>0;
-//			
-//			if(ispresent_requesticon && ispresent_namedisplay) {
-//				String screenshotpath=BaseClass.addScreenshot(driver);
-//				logger.log(LogStatus.INFO, logger.addScreenCapture(screenshotpath));
-//			}else if(ispresent_namedisplay) {
-//				String screenshotpath=BaseClass.addScreenshot(driver);
-//				logger.log(LogStatus.INFO, logger.addScreenCapture(screenshotpath));
-//			}
-//			
-//			
-//				
-//				
-//				
-//			
-//			logger.log(LogStatus.PASS, "Loginpage is loaded successfully for user "+usernamesignals);
-//			//wait.until(ExpectedConditions.presenceOfElementLocated(signout)).click();
-//			//logger.log(LogStatus.PASS, "Loggedout ");
-//		}else if(method.equalsIgnoreCase("LoginNegative")) {
-//			Boolean isPresent = driver.findElements(failedloginpage).size()>0;
-//			if(isPresent) {
-//				logger.log(LogStatus.PASS, "unauthorized user not logged in");
-//			}else {
-//				logger.log(LogStatus.FAIL, "unauthorized user allowed to log in");
-//			}
-//			
-//		}
-//		
-//	}
 	
 	
 	public void loginpagepopupdismiss(WebDriver driver,ExtentTest logger,WebDriverWait wait) {

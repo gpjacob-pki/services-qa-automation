@@ -96,12 +96,6 @@ public class BaseClass
 	//initialize chrome driver.
     public ChromeDriver chromeinitialization() throws MalformedURLException {
     	System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir")+"//src//test//resources//driver//chromedriver.exe");
-		//System.out.println(System.getProperty("user.dir")+"\\reports\\Automation");
-		
-		
-//		driver=new ChromeDriver();
-		
-		
 		ChromeOptions option=new ChromeOptions();
 		option.setHeadless(false);
 		option.addArguments("window-size=1366,768");
