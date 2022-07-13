@@ -28,9 +28,9 @@ public class APItest extends BaseClass {
 	static String nameofid;
 	@Test(enabled = true ,dataProvider = "postAPIData",groups = "API_Test")
 	
-	public void apimethod(String BaseURI,String Method,String Header_Key,String Header_Value,String status_code) {
+	public void apimethod(String BaseURI,String Method,String Header_Key,String Header_Value,String status_code, String Name) {
 
-		logger=extent.startTest("Validate attrribute name of experiment");
+		logger=extent.startTest("Validating the "+Name+"API");
 		int statuscode=Integer.parseInt(status_code);  
 		RestAssured.baseURI=BaseURI;
 
@@ -61,7 +61,7 @@ public class APItest extends BaseClass {
 			 
 				 if(System.getenv("environment").equalsIgnoreCase("srv18")) {
 					 System.out.println("executing with jenkin variables dataprovider in srv18");
-					 testOBJArray=getdata(testdatasheetpath,"PostAPI_AttributeCreation");
+					 testOBJArray=getdata(testdatasheetpath,"GetAPI");
 				 }
 			 //write for other env here
 		 }

@@ -3,19 +3,14 @@
    <test name = "Parallel Tests" parallel = "classes" thread-count = "3">
     <groups>
             <run>
-            
                 <include name = "API_Test">
                 </include>
-                
             </run>
-            
         </groups>
       
     <classes>
     	<class name = "afterTest.AfterSuite" />
-         	
-         	<class name = "test.API.APItest" /> 
-          	
+        <class name = "test.API.APItest" />
       </classes>
       
    </test>
