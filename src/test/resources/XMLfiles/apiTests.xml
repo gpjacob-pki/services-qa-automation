@@ -12,7 +12,7 @@
         </groups>
       
     <classes>
-    	<class name = "test.Regressiontest.Aftersuite" /> 
+    	<class name = "afterTest.AfterSuite" />
          	
          	<class name = "test.API.APItest" /> 
           	
