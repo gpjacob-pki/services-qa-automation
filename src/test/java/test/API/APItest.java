@@ -8,6 +8,7 @@ import static io.restassured.RestAssured.*;
 import static io.restassured.matcher.RestAssuredMatchers.*;
 
 import io.restassured.response.Response;
+import org.bson.io.BsonOutput;
 import org.testng.Assert;
 import test.Utility.BaseClass;
 
@@ -30,9 +31,12 @@ public class APItest extends BaseClass {
 	static String nameofid;
 	@Test(enabled = true ,dataProvider = "postAPIData",groups = "API_Test")
 	
-	public void apimethod(String BaseURI,String Method,String Header_Key,String Header_Value,String status_code, String Name) {
+	public void apimethod(String BaseURI,String Method,String Header_Key,String Header_Value,String status_code, String Name, String ValidationValue, String ValidationKey, String ValidationKeyValue) {
 
 		logger=extent.startTest("Validating the "+Name+"API");
+
+		System.out.println(Name);
+
 		int statuscode=Integer.parseInt(status_code);
 
 		String base = ConfigFileReader("URL")+BaseURI;
@@ -41,6 +45,7 @@ public class APItest extends BaseClass {
 		RestAssured.baseURI=base;
 
 
+		System.out.println(Name);
 		Response response=given().header(Header_Key,Header_Value).when().get().then().log().all().statusCode(statuscode).extract().response();
 
 
@@ -48,26 +53,58 @@ public class APItest extends BaseClass {
 		Assert.assertEquals(statusCode, statuscode);
 		logger.log(LogStatus.PASS, "Response code is as expected:"+statuscode);
 
-
+         //Validating whether the string is JSON or not
          String responseBody = response.getBody().asPrettyString();
+		 Assert.assertEquals(isJsonString(responseBody), true);
+
+		 //Validating whether the response is according to the expected values
+		 JsonPath jsonPath = response.jsonPath();
+
+		System.out.println(jsonPath.getString("data.id[0]"));
+
+		System.out.println(jsonPath.getString(ValidationKey));
+
+		//Validating for the response which have id inside the data section
+        if(jsonPath.getString("data.id[0]")!=null) {
+
+			System.out.println("Entering the loop");
+			int length = jsonPath.getInt("data.size()");
 
 
-		 Assert.assertTrue(isJsonString(responseBody), "The response is JSON content");
+			for (int i = 0; i < length; i++) {
+				String actual = jsonPath.getString("data.id["+i+"]");
+				if (actual.equals(ValidationValue)) {
 
-		/*int length=js.getInt("data.size()");
+					logger.log(LogStatus.PASS, "The id matches with the expected" + actual);
 
-
-
-		for(int i=0;i<length;i++) {
-			String experimentidActual=js.getString("data["+i+"].id");
-			if(experimentidActual.equals(Validationid)) {
-
-				nameofid=js.getString("data["+i+"].attributes.name");
-				logger.log(LogStatus.PASS, "experiment id: "+experimentidActual+" name is :"+nameofid);
-				break;
+					System.out.println("The id matches with the expected" + actual);
+					break;
+				}
+			else {
+						Assert.fail("The id is not present");
+					logger.log(LogStatus.FAIL, "The id does not match with the expected");
+					break;
+				}
 			}
-			}*/
+
+		}
+
+        //Validating for other which doesn't have 'data' field
+		else if(jsonPath.getString(ValidationKeyValue)!=null){
+
+          String actual = jsonPath.getString(ValidationKey);
+
+		  if(actual.equals(ValidationKeyValue)){
+
+			  logger.log(LogStatus.PASS, "The id matches with the expected" + actual);
+
+		  }
+
+
+		}
+
 	}
+
 
 
 	public boolean isJsonString(String response) {
