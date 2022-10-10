@@ -1,7 +1,10 @@
 package test.API;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.util.JSON;
 import io.restassured.RestAssured;
+import io.restassured.internal.path.json.JSONAssertion;
 import io.restassured.path.json.JsonPath;
 
 
@@ -9,7 +12,9 @@ import static io.restassured.RestAssured.*;
 import static io.restassured.matcher.RestAssuredMatchers.*;
 
 import io.restassured.response.Response;
+import org.apache.commons.lang3.StringUtils;
 import org.bson.io.BsonOutput;
+import org.jsoup.helper.StringUtil;
 import org.testng.Assert;
 import test.Utility.BaseClass;
 
@@ -33,7 +38,7 @@ public class APItest extends BaseClass {
     ExtentTest logger;
 
     @Test(enabled = true, dataProvider = "postAPIData", groups = "API_Tests")
-	public void apimethod(String BaseURI, String Method, String Header_Key, String Header_Value, String status_code, String Name, String ValidationValue, String ValidationKey, String ValidationKeyValue) {
+	public void apimethod(String BaseURI, String Method, String Header_Key, String Header_Value, String status_code, String Name, String expectedResponse) throws IOException {
 
         logger = extent.startTest("Validating the " + Name + "API");
 
@@ -44,11 +49,12 @@ public class APItest extends BaseClass {
         String base = ConfigFileReader("URL") + BaseURI;
 
         System.out.println("The base is :" + base);
+
         RestAssured.baseURI = base;
 
 
         System.out.println(Name);
-        Response response = given().header(Header_Key, Header_Value).when().get().then().log().all().statusCode(statuscode).extract().response();
+        Response response = given().header(Header_Key, Header_Value).when().get().then().log().all().statusCode(200).extract().response();
 
 
         int statusCode = response.getStatusCode();
@@ -59,7 +65,16 @@ public class APItest extends BaseClass {
         String responseBody = response.getBody().asPrettyString();
         Assert.assertEquals(isJsonString(responseBody), true);
 
-        //Validating whether the response is according to the expected values
+        //ComparingResponses
+
+        //Assert.assertTrue(response.equals(expectedResponse));
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        Assert.assertEquals(mapper.readTree(responseBody), mapper.readTree(expectedResponse));
+
+
+        /*//Validating whether the response is according to the expected values
         JsonPath jsonPath = response.jsonPath();
 
         System.out.println(jsonPath.getString("data.id[0]"));
@@ -98,7 +113,8 @@ public class APItest extends BaseClass {
                 logger.log(LogStatus.PASS, "The id matches with the expected" + actual);
             }
 
-        }
+        }*/
+
 
     }
 
@@ -120,7 +136,7 @@ public class APItest extends BaseClass {
         if (ConfigFileReader("runon").equalsIgnoreCase("local")) {
 
             if (ConfigFileReader("environment").equalsIgnoreCase("srv18")) {
-                testOBJArray = getdata(testdatasheetpath, "GetAPIS");
+                testOBJArray = getdata(testdatasheetpath, "CompareAPIs");
 
             }
             //write for other env here
@@ -130,7 +146,7 @@ public class APItest extends BaseClass {
 
             if (System.getenv("environment").equalsIgnoreCase("srv18")) {
                 System.out.println("executing with jenkin variables dataprovider in srv18");
-                testOBJArray = getdata(testdatasheetpath, "GetAPIS");
+                testOBJArray = getdata(testdatasheetpath, "CompareAPIs");
             }
             //write for other env here
         }
