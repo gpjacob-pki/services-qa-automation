@@ -13,7 +13,6 @@ public class AfterSuite extends BaseClass{
         @AfterTest(alwaysRun = true)
         public void aftrtst() throws IOException, InterruptedException {
 
-
             extent.flush();
             try {
                 driver.quit();

@@ -3,7 +3,7 @@
    <test name = "Parallel Tests" parallel = "classes" thread-count = "3">
     <groups>
             <run>
-                <include name = "API_Test">
+                <include name = "API_Tests">
                 </include>
             </run>
         </groups>
