@@ -53,18 +53,16 @@ public class BaseClass
 	
 	//testdata sheet path.
 	public String testdatasheetpath=System.getProperty("user.dir")+"//src//test//resources//testdata//users.xls";
-	public String testdatasheetpathxlsx=System.getProperty("user.dir")+"//src//test//resources//testdata//testdata.xlsx";
 	
 	//driver and extent reports
 	public static  ExtentTest test;
 	public ChromeDriver driver;
-	public RemoteWebDriver driver2;
 	//extent report with time stamp
 	static String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
 	
 	
 	//extent report location
-	public static ExtentReports extent= new ExtentReports(System.getProperty("user.dir")+"\\reports\\Automationreports"+timeStamp+".html",true);
+	public static ExtentReports extent= new ExtentReports(System.getProperty("user.dir")+"//reports//Automationreports"+timeStamp+".html",true);
 	WebDriverWait wait;
 	
 	public Properties properties;

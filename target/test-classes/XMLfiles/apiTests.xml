@@ -1,6 +1,6 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
 <suite name = "Parallel Testing Suite">
-   <test name = "Parallel Tests" parallel = "classes" thread-count = "3">
+   <test name = "Parallel Tests">
     <groups>
             <run>
                 <include name = "API_Tests">
@@ -9,8 +9,8 @@
         </groups>
       
     <classes>
-    	<class name = "afterTest.AfterSuite" />
         <class name = "test.API.APItest" />
+        <class name = "afterTest.AfterSuite" />
       </classes>
       
    </test>
