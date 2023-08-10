@@ -70,8 +70,8 @@ public class APItest extends BaseClass {
         RestAssured.useRelaxedHTTPSValidation();
 
         System.out.println(Name);
-        Response response = given().header(Header_Key, Header_Value).when().get().then().log().all().extract().response();
-
+        //Response response = given().header(Header_Key, Header_Value).when().get().then().log().all().extract().response();
+        Response response = given().header(Header_Key, ConfigFileReader(Header_Key)).when().get().then().log().all().extract().response();
 
         int statusCode = response.getStatusCode();
         Assert.assertEquals(statusCode, statuscode);
