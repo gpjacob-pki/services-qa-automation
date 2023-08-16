@@ -50,7 +50,7 @@ public class APItest extends BaseClass {
 
     ExtentTest logger;
 
-    @Test(enabled = true, dataProvider = "postAPIData", groups = "API_Tests")
+    @Test( dataProvider = "postAPIData")
     public void apimethod(String BaseURI, String Method, String Header_Key, String Header_Value, String status_code, String Name, String expectedResponse, String clientName) throws IOException {
 
         SoftAssert softAssert = new SoftAssert();
@@ -118,14 +118,14 @@ public class APItest extends BaseClass {
                     MapDifference<String, Object> difference = Maps.difference(leftFlatMap, rightFlatMap);
 
                     System.out.println("Entries only on the actual response\n--------------------------");
-                    logger.log(LogStatus.INFO, "Entries only on the actual response\n--------------------------");
+                    logger.log(LogStatus.ERROR, "Entries only on the actual response\n--------------------------");
                     difference.entriesOnlyOnLeft()
                             .forEach((key, value) -> System.out.println(key + ": " + value));
                     difference.entriesOnlyOnLeft()
                             .forEach((key, value) -> logger.log(LogStatus.INFO, key + ": " + value));
 
                     System.out.println("\n\nEntries only on the expected response\n--------------------------");
-                    logger.log(LogStatus.INFO, "\n\nEntries only on the expected response\n--------------------------");
+                    logger.log(LogStatus.ERROR, "\n\nEntries only on the expected response\n--------------------------");
                     difference.entriesOnlyOnRight()
                             .forEach((key, value) -> System.out.println(key + ": " + value));
                     difference.entriesOnlyOnRight()
@@ -142,14 +142,30 @@ public class APItest extends BaseClass {
                     JsonArray leftJsonArray = leftJsonElement.getAsJsonArray();
                     JsonArray rightJsonArray = rightJsonElement.getAsJsonArray();
 
+                    JsonObject leftJsonObject =  new JsonObject();
+                    leftJsonObject.add("",leftJsonArray);
+
+                    JsonObject rightJsonObject =  new JsonObject();
+                    rightJsonObject.add("",rightJsonArray);
+
+                    getDifferencesFromObject(leftJsonObject,rightJsonObject);
+
+                    return;
+
+
                     // Handle JSON arrays comparison
-                    for (int i = 0; i < leftJsonArray.size() && i < rightJsonArray.size(); i++) {
+                   /* for (int i = 0; i < leftJsonArray.size() && i < rightJsonArray.size(); i++) {
                         JsonElement leftElement = leftJsonArray.get(i);
                         JsonElement rightElement = rightJsonArray.get(i);
+                        if(leftElement.isJsonObject() && rightElement.isJsonObject())
+                        {
 
-                        if (!leftElement.equals(rightElement)) {
-                            System.out.println("Difference in array element at index " + i);
+                        } else if (leftElement.isJsonPrimitive() && rightElement.isJsonPrimitive()) {
+                            if (!leftElement.equals(rightElement)) {
+                                System.out.println("Difference in array element at index " + i);
+                            }
                         }
+
                     }
 
                     // Entries only on the actual response
@@ -166,13 +182,15 @@ public class APItest extends BaseClass {
                             System.out.println("Entry only in expected response: " + rightElement);
                             logger.log(LogStatus.INFO, "\n\nEntries only on the expected response\n--------------------------");
                         }
-                    });
+                    });*/
                 } else {
                     System.out.println("Invalid JSON input");
+
                 }
             } catch (JsonSyntaxException e) {
 
                 System.out.println("There is some issue in the JSON");
+                logger.log(LogStatus.ERROR, "Not a valid json");
             }
 
 
@@ -187,6 +205,43 @@ public class APItest extends BaseClass {
 
     }
 
+    public void getDifferencesFromObject(JsonObject leftJsonObject, JsonObject rightJsonObject)
+    {
+        Gson gson = new Gson();
+
+        Type type = new TypeToken<Map<String, Object>>() {
+        }.getType();
+
+        Map<String, Object> leftMap = gson.fromJson(leftJsonObject, type);
+        Map<String, Object> rightMap = gson.fromJson(rightJsonObject, type);
+
+
+        Map<String, Object> leftFlatMap = FlatMapUtil.flatten(leftMap);
+        Map<String, Object> rightFlatMap = FlatMapUtil.flatten(rightMap);
+
+        MapDifference<String, Object> difference = Maps.difference(leftFlatMap, rightFlatMap);
+
+        System.out.println("Entries only on the actual response\n--------------------------");
+        logger.log(LogStatus.ERROR, "Entries only on the actual response\n--------------------------");
+        difference.entriesOnlyOnLeft()
+                .forEach((key, value) -> System.out.println(key + ": " + value));
+        difference.entriesOnlyOnLeft()
+                .forEach((key, value) -> logger.log(LogStatus.WARNING, key + ": " + value));
+
+        System.out.println("\n\nEntries only on the expected response\n--------------------------");
+        logger.log(LogStatus.ERROR, "\n\nEntries only on the expected response\n--------------------------");
+        difference.entriesOnlyOnRight()
+                .forEach((key, value) -> System.out.println(key + ": " + value));
+        difference.entriesOnlyOnRight()
+                .forEach((key, value) -> logger.log(LogStatus.WARNING, key + ": " + value));
+
+        System.out.println("\n\nEntries differing\n--------------------------");
+        logger.log(LogStatus.INFO, "\n\nEntries differing\n--------------------------");
+        difference.entriesDiffering()
+                .forEach((key, value) -> System.out.println(key + ": " + value));
+        difference.entriesDiffering()
+                .forEach((key, value) -> logger.log(LogStatus.INFO, key + ": " + value));
+    }
 
     public boolean isJsonString(String response) {
         try {
@@ -196,6 +251,8 @@ public class APItest extends BaseClass {
         }
         return true;
     }
+
+
 
     @DataProvider
     public String[][] postAPIData() throws IOException {
