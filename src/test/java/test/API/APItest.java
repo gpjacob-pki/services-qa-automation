@@ -122,14 +122,14 @@ public class APItest extends BaseClass {
                     difference.entriesOnlyOnLeft()
                             .forEach((key, value) -> System.out.println(key + ": " + value));
                     difference.entriesOnlyOnLeft()
-                            .forEach((key, value) -> logger.log(LogStatus.INFO, key + ": " + value));
+                            .forEach((key, value) -> logger.log(LogStatus.WARNING, key + ": " + value));
 
                     System.out.println("\n\nEntries only on the expected response\n--------------------------");
                     logger.log(LogStatus.ERROR, "\n\nEntries only on the expected response\n--------------------------");
                     difference.entriesOnlyOnRight()
                             .forEach((key, value) -> System.out.println(key + ": " + value));
                     difference.entriesOnlyOnRight()
-                            .forEach((key, value) -> logger.log(LogStatus.INFO, key + ": " + value));
+                            .forEach((key, value) -> logger.log(LogStatus.WARNING, key + ": " + value));
 
                     System.out.println("\n\nEntries differing\n--------------------------");
                     logger.log(LogStatus.INFO, "\n\nEntries differing\n--------------------------");
