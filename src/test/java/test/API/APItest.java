@@ -51,21 +51,25 @@ public class APItest extends BaseClass {
     ExtentTest logger;
 
     @Test( dataProvider = "postAPIData")
-    public void apimethod(String BaseURI, String Method, String Header_Key, String Header_Value, String status_code, String Name, String expectedResponse, String clientName) throws IOException {
+    public void apimethod(String BaseURI, String Method, String Header_Key, String status_code, String Name, String expectedResponse, String clientName) throws IOException {
 
         SoftAssert softAssert = new SoftAssert();
 
-        logger = extent.startTest("Validating the " + Name + "API");
+        String base = ConfigFileReader("URL") + BaseURI;
+
+        logger = extent.startTest("Validating the " + Name + " API");
 
         System.out.println(Name);
 
         int statuscode = Integer.parseInt(status_code);
 
-        String base = ConfigFileReader("URL") + BaseURI;
-
         System.out.println("The base is :" + base);
 
         RestAssured.baseURI = base;
+
+        logger.log(LogStatus.INFO,base);
+
+        logger.log(LogStatus.INFO,Header_Key);
 
         RestAssured.useRelaxedHTTPSValidation();
 
@@ -118,14 +122,14 @@ public class APItest extends BaseClass {
                     MapDifference<String, Object> difference = Maps.difference(leftFlatMap, rightFlatMap);
 
                     System.out.println("Entries only on the actual response\n--------------------------");
-                    logger.log(LogStatus.ERROR, "Entries only on the actual response\n--------------------------");
+                    logger.log(LogStatus.INFO, "Entries only on the actual response\n--------------------------");
                     difference.entriesOnlyOnLeft()
                             .forEach((key, value) -> System.out.println(key + ": " + value));
                     difference.entriesOnlyOnLeft()
                             .forEach((key, value) -> logger.log(LogStatus.INFO, key + ": " + value));
 
                     System.out.println("\n\nEntries only on the expected response\n--------------------------");
-                    logger.log(LogStatus.ERROR, "\n\nEntries only on the expected response\n--------------------------");
+                    logger.log(LogStatus.INFO, "\n\nEntries only on the expected response\n--------------------------");
                     difference.entriesOnlyOnRight()
                             .forEach((key, value) -> System.out.println(key + ": " + value));
                     difference.entriesOnlyOnRight()
@@ -222,14 +226,14 @@ public class APItest extends BaseClass {
         MapDifference<String, Object> difference = Maps.difference(leftFlatMap, rightFlatMap);
 
         System.out.println("Entries only on the actual response\n--------------------------");
-        logger.log(LogStatus.ERROR, "Entries only on the actual response\n--------------------------");
+        logger.log(LogStatus.INFO, "Entries only on the actual response\n--------------------------");
         difference.entriesOnlyOnLeft()
                 .forEach((key, value) -> System.out.println(key + ": " + value));
         difference.entriesOnlyOnLeft()
                 .forEach((key, value) -> logger.log(LogStatus.WARNING, key + ": " + value));
 
         System.out.println("\n\nEntries only on the expected response\n--------------------------");
-        logger.log(LogStatus.ERROR, "\n\nEntries only on the expected response\n--------------------------");
+        logger.log(LogStatus.INFO, "\n\nEntries only on the expected response\n--------------------------");
         difference.entriesOnlyOnRight()
                 .forEach((key, value) -> System.out.println(key + ": " + value));
         difference.entriesOnlyOnRight()
