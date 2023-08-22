@@ -57,7 +57,7 @@ public class APItest extends BaseClass {
 
         String base = ConfigFileReader("URL") + BaseURI;
 
-        logger = extent.startTest("Validating the " + Name + " API");
+        logger = extent.startTest(BaseURI);
 
         System.out.println(Name);
 
@@ -69,7 +69,7 @@ public class APItest extends BaseClass {
 
         logger.log(LogStatus.INFO,base);
 
-        logger.log(LogStatus.INFO,Header_Key);
+        logger.log(LogStatus.INFO,"Header: " + Header_Key);
 
         RestAssured.useRelaxedHTTPSValidation();
 
