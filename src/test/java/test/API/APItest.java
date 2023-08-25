@@ -29,10 +29,8 @@ import static org.hamcrest.Matchers.*;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.xml.crypto.Data;
 
@@ -65,17 +63,19 @@ public class APItest extends BaseClass {
 
         System.out.println("The base is :" + base);
 
-        RestAssured.baseURI = base;
+        RestAssured.baseURI = ConfigFileReader("URL") ;
 
         logger.log(LogStatus.INFO,base);
 
         logger.log(LogStatus.INFO,"Header: " + Header_Key);
 
         RestAssured.useRelaxedHTTPSValidation();
-
         System.out.println(Name);
         //Response response = given().header(Header_Key, Header_Value).when().get().then().log().all().extract().response();
-        Response response = given().header(Header_Key, ConfigFileReader(Header_Key)).when().get().then().log().all().extract().response();
+        Response response = RestAssured.given().header(Header_Key, ConfigFileReader(Header_Key))
+                .when()
+                .get(BaseURI)
+                .then().log().all().extract().response();
 
         int statusCode = response.getStatusCode();
         Assert.assertEquals(statusCode, statuscode);
@@ -89,6 +89,7 @@ public class APItest extends BaseClass {
 
         //Validating whether the string is JSON or not
         String responseBody = response.getBody().asPrettyString();
+        RestAssured.reset();
         softAssert.assertEquals(isJsonString(responseBody), true);
         Boolean flag = isJsonString(responseBody);
 
@@ -109,11 +110,14 @@ public class APItest extends BaseClass {
                     JsonObject leftJsonObject = leftJsonElement.getAsJsonObject();
                     JsonObject rightJsonObject = rightJsonElement.getAsJsonObject();
 
+                    processObjects(leftJsonObject,rightJsonObject);
+
+
                     Type type = new TypeToken<Map<String, Object>>() {
                     }.getType();
 
-                    Map<String, Object> leftMap = gson.fromJson(responseBody, type);
-                    Map<String, Object> rightMap = gson.fromJson(expectedResponse, type);
+                    Map<String, Object> leftMap = gson.fromJson(leftJsonObject, type);
+                    Map<String, Object> rightMap = gson.fromJson(rightJsonObject, type);
 
 
                     Map<String, Object> leftFlatMap = FlatMapUtil.flatten(leftMap);
@@ -121,7 +125,28 @@ public class APItest extends BaseClass {
 
                     MapDifference<String, Object> difference = Maps.difference(leftFlatMap, rightFlatMap);
 
-                    System.out.println("Entries only on the actual response\n--------------------------");
+                    System.out.println( "----------------\t Only in actual response\t----------------------------");
+                    logger.log(LogStatus.INFO, "----------------\t Only in actual response\t----------------------------");
+                    Map<String,Object> differenceLeftSorted =  new HashMap<String,Object>();
+                    differenceLeftSorted = removeRepeatingFlags(difference.entriesOnlyOnLeft());
+                    differenceLeftSorted
+                            .forEach((key, value) -> logger.log(LogStatus.INFO, key));
+
+                    differenceLeftSorted
+                            .forEach((key, value) ->  System.out.println(key));
+
+                    System.out.println( "----------------\t Only in Expected response\t----------------------------");
+                    logger.log(LogStatus.INFO, "----------------\t Only in Expected response\t----------------------------");
+                    Map<String,Object> differenceRightSorted =  new HashMap<String,Object>();
+                    differenceRightSorted = removeRepeatingFlags(difference.entriesOnlyOnRight());
+
+                    differenceRightSorted
+                            .forEach((key, value) -> logger.log(LogStatus.INFO, key));
+
+                    differenceRightSorted
+                            .forEach((key, value) ->  System.out.println(key));
+
+                   /* System.out.println("Entries only on the actual response\n--------------------------");
                     logger.log(LogStatus.INFO, "Entries only on the actual response\n--------------------------");
                     difference.entriesOnlyOnLeft()
                             .forEach((key, value) -> System.out.println(key + ": " + value));
@@ -140,9 +165,10 @@ public class APItest extends BaseClass {
                     difference.entriesDiffering()
                             .forEach((key, value) -> System.out.println(key + ": " + value));
                     difference.entriesDiffering()
-                            .forEach((key, value) -> logger.log(LogStatus.INFO, key + ": " + value));
+                            .forEach((key, value) -> logger.log(LogStatus.INFO, key + ": " + value));*/
 
-                } else if (leftJsonElement.isJsonArray() && rightJsonElement.isJsonArray()) {
+                }
+                else if (leftJsonElement.isJsonArray() && rightJsonElement.isJsonArray()) {
                     JsonArray leftJsonArray = leftJsonElement.getAsJsonArray();
                     JsonArray rightJsonArray = rightJsonElement.getAsJsonArray();
 
@@ -151,6 +177,8 @@ public class APItest extends BaseClass {
 
                     JsonObject rightJsonObject =  new JsonObject();
                     rightJsonObject.add("",rightJsonArray);
+
+                    processObjects(leftJsonObject,rightJsonObject);
 
                     getDifferencesFromObject(leftJsonObject,rightJsonObject);
 
@@ -224,7 +252,29 @@ public class APItest extends BaseClass {
         Map<String, Object> rightFlatMap = FlatMapUtil.flatten(rightMap);
 
         MapDifference<String, Object> difference = Maps.difference(leftFlatMap, rightFlatMap);
+        Map<String,Object> differenceLeftSorted =  new HashMap<String,Object>();
+        differenceLeftSorted = removeRepeatingFlags(difference.entriesOnlyOnLeft());
 
+        logger.log(LogStatus.INFO, "----------------\t Only in actual response\t----------------------------");
+        System.out.println( "----------------\t Only in actual response\t----------------------------");
+        differenceLeftSorted
+                .forEach((key, value) -> logger.log(LogStatus.INFO, key));
+
+
+        differenceLeftSorted
+                .forEach((key, value) ->  System.out.println(key));
+
+        System.out.println( "----------------\t Only in Expected response\t----------------------------");
+        logger.log(LogStatus.INFO, "----------------\t Only in Expected response\t----------------------------");
+        Map<String,Object> differenceRightSorted =  new HashMap<String,Object>();
+        differenceRightSorted = removeRepeatingFlags(difference.entriesOnlyOnRight());
+
+        differenceRightSorted
+                .forEach((key, value) -> logger.log(LogStatus.INFO, key));
+
+        differenceRightSorted
+                .forEach((key, value) ->  System.out.println(key));
+        /*
         System.out.println("Entries only on the actual response\n--------------------------");
         logger.log(LogStatus.INFO, "Entries only on the actual response\n--------------------------");
         difference.entriesOnlyOnLeft()
@@ -244,13 +294,176 @@ public class APItest extends BaseClass {
         difference.entriesDiffering()
                 .forEach((key, value) -> System.out.println(key + ": " + value));
         difference.entriesDiffering()
-                .forEach((key, value) -> logger.log(LogStatus.INFO, key + ": " + value));
+                .forEach((key, value) -> logger.log(LogStatus.INFO, key + ": " + value));*/
     }
 
     public boolean isJsonString(String response) {
         try {
             JSON.parse(response);
         } catch (Exception e) {
+            return false;
+        }
+        return true;
+    }
+
+    public  Map<String,Object> removeRepeatingFlags(Map<String,Object> lst)
+    {
+        Map<String,Object> differenceSorted =  new HashMap<String,Object>();
+        for(String key : lst.keySet())
+        {
+            String[] keyList   =  key.split("/");
+            String keyname =  "";
+            for (String k : keyList )
+            {
+                if( k != null && !k.isEmpty())
+                {
+                    if(isNumeric(k))
+                    {
+                        keyname += "[]";
+                    }else{
+
+                        if(!keyname.isEmpty())
+                            keyname += ">";
+
+
+                        keyname += k;
+                    }
+
+
+                }
+
+            }
+
+            if(!differenceSorted.containsKey(keyname))
+            {
+                differenceSorted.put(keyname,key);
+            }
+
+        }
+        return differenceSorted;
+    }
+    public void processObjects(JsonObject left, JsonObject right)
+    {
+
+
+        if(left.isJsonObject() && right.isJsonObject())
+        {
+
+            List<String> keys =  new ArrayList<String>();
+            for(String ke : left.keySet())
+            {
+                keys.add(ke);
+            }
+
+            for(String ke : right.keySet())
+            {
+                if(!keys.contains(ke))
+                  keys.add(ke);
+            }
+
+             for(String k : keys)
+             {
+                 if(!left.has(k) || !right.has(k))
+                 {
+                     continue;
+                 }
+                 if(left.get(k).isJsonNull() || right.get(k).isJsonNull())
+                 {
+                     continue;
+                 }
+                 if(left.get(k).isJsonArray() && right.get(k).isJsonArray())
+                 {
+                     ArrayList<JsonArray>  lst =   processjsonArray(left.get(k).getAsJsonArray() , right.get(k).getAsJsonArray());
+                     left.remove(k);
+                     left.add(k,lst.get(0));
+
+                     right.remove(k);
+                     right.add(k,lst.get(1));
+                 }
+             }
+        }
+
+    }
+
+    public ArrayList<JsonArray> processjsonArray(JsonArray arr1 , JsonArray  arr2)
+    {
+
+          arr2 =   identifyMissingArrayObject(arr1,arr2);
+          arr1 =   identifyMissingArrayObject(arr2,arr1);
+          ArrayList<JsonArray> a =  new ArrayList<JsonArray>();
+          a.add(arr1);
+          a.add(arr2);
+          return a;
+    }
+
+    public JsonArray identifyMissingArrayObject(JsonArray arr1, JsonArray  arr2) {
+        JsonArray backupArray = arr2.deepCopy();
+        JsonArray newArray = new JsonArray();
+        try {
+            for (JsonElement je : arr1) {
+                if (je.isJsonObject()) {
+                    JsonObject job = je.getAsJsonObject();
+                     String key ="";
+                    for(String kee : getIdentifiers())
+                    {
+                        if(job.keySet().contains(kee))
+                        {
+                            key = kee;
+                            break;
+                        }
+                    }
+                        if (job.keySet().contains(key)) {
+                            if (arr2.size() > 0) {
+
+
+                                 JsonObject job2 = null;
+                                for(JsonElement je2: arr2)
+                                {
+                                    job2 = null;
+                                    if(je2.getAsJsonObject().get(key).equals(job.get(key)))
+                                    {
+                                        job2 = je2.getAsJsonObject().deepCopy();
+                                        break;
+                                    }
+                                }
+
+                                if(job2 != null)
+                                {
+                                     newArray.add(job2);
+                                }else{
+                                    newArray.add(job);
+                                }
+
+                            }
+                        }
+
+
+                }
+            }
+
+            return newArray;
+
+        } catch (Exception ex) {
+            return backupArray;
+        }
+
+
+    }
+
+
+    public String[] getIdentifiers()
+    {
+       String[] lst = {"id","eid","name","action","username","type"};
+       return lst;
+    }
+
+    public  boolean isNumeric(String strNum) {
+        if (strNum == null) {
+            return false;
+        }
+        try {
+            double d = Integer.parseInt(strNum);
+        } catch (NumberFormatException nfe) {
             return false;
         }
         return true;
