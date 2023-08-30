@@ -18,6 +18,12 @@ import static io.restassured.matcher.RestAssuredMatchers.*;
 import io.restassured.response.Response;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
 import org.bson.io.BsonOutput;
 import org.jsoup.helper.StringUtil;
 import org.testng.Assert;
@@ -27,8 +33,12 @@ import test.Utility.BaseClass;
 import static org.hamcrest.Matchers.*;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -49,7 +59,11 @@ public class APItest extends BaseClass {
     ExtentTest logger;
 
     @Test( dataProvider = "postAPIData")
-    public void apimethod(String BaseURI, String Method, String Header_Key, String status_code, String Name, String expectedResponse, String clientName) throws IOException {
+    public void apimethod(String BaseURI, String Method, String Header_Key, String status_code, String Name, String expectedResponse, String clientName , String lastautoupdate, String isAutoUpdate) throws IOException {
+
+
+
+
 
         SoftAssert softAssert = new SoftAssert();
 
@@ -234,6 +248,84 @@ public class APItest extends BaseClass {
             System.out.println("The difference is " + difference);
             logger.log(LogStatus.INFO, "The difference is " + difference);
         }
+
+    }
+
+
+
+    public void updateLatestResponses() throws IOException
+    {
+
+        FileInputStream fis= new  FileInputStream(testdatasheetpath);
+        HSSFWorkbook workbook=new HSSFWorkbook(fis);
+        HSSFSheet sheet= workbook.getSheet("CompareAPIs");
+        int columns= sheet.getRow(0).getLastCellNum();
+        int totalRow=sheet.getPhysicalNumberOfRows();
+
+        Map<String, Integer> colMapByName = new HashMap<String, Integer>();
+        if (sheet.getRow(0).cellIterator().hasNext()) {
+            for (int j = 0; j < columns; j++) {
+                colMapByName.put(sheet.getRow(0).getCell(j).getStringCellValue().toLowerCase(), j);
+            }
+        }
+
+        int indexBaseUri =colMapByName.get("baseuri").intValue();
+        int indexER =colMapByName.get("expected response").intValue();
+
+        for(int rowNum=1;rowNum < totalRow;rowNum++) {
+            HSSFRow row =sheet.getRow(rowNum);
+
+            Boolean isautoupdate =  false;
+
+            try {
+                isautoupdate =   row.getCell(colMapByName.get("isautoupdate").intValue()).getBooleanCellValue();
+
+            }
+            catch(Exception ex){
+
+            }
+
+            if(!isautoupdate)
+            {
+               continue;
+            }
+
+            HSSFCell cellBaseUri = row.getCell(indexBaseUri);
+            Cell cellER = row.getCell(indexER);
+            Cell cellLastUpdate = row.getCell(colMapByName.get("lastautoupdate").intValue());
+            String baseuri   =  cellBaseUri.getStringCellValue();
+            System.out.print(baseuri + "\t");
+            String Header_Key = row.getCell(colMapByName.get("header_key").intValue()).getStringCellValue();
+            RestAssured.baseURI = ConfigFileReader("URL") ;
+            Response response = RestAssured.given().header(Header_Key, ConfigFileReader(Header_Key))
+                    .when()
+                    .get(baseuri)
+                    .then().log().all().extract().response();
+            System.out.print(response.statusCode());
+
+            String responseBody = response.getBody().asPrettyString();
+
+            cellER.setCellValue(responseBody);
+            DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+            Date date = new Date();
+            if(cellLastUpdate == null)
+            {
+                cellLastUpdate =  row.createCell(colMapByName.get("lastautoupdate").intValue());
+            }
+            cellLastUpdate.setCellValue(dateFormat.format(date));
+
+
+
+        }
+
+        fis.close();
+
+        FileOutputStream os = new FileOutputStream(testdatasheetpath);
+        workbook.write(os);
+
+        //Close the workbook and output stream
+        workbook.close();
+        os.close();
 
     }
 
@@ -473,6 +565,9 @@ public class APItest extends BaseClass {
 
     @DataProvider
     public String[][] postAPIData() throws IOException {
+
+        updateLatestResponses();
+
         String[][] testOBJArray = null;
 
         System.out.println("configfile reader value is :" + ConfigFileReader("runon"));
