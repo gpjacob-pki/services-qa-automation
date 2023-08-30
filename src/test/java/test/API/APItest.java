@@ -144,7 +144,7 @@ public class APItest extends BaseClass {
                     Map<String,Object> differenceLeftSorted =  new HashMap<String,Object>();
                     differenceLeftSorted = removeRepeatingFlags(difference.entriesOnlyOnLeft());
                     differenceLeftSorted
-                            .forEach((key, value) -> logger.log(LogStatus.INFO, key));
+                            .forEach((key, value) -> logger.log(LogStatus.WARNING, key));
 
                     differenceLeftSorted
                             .forEach((key, value) ->  System.out.println(key));
@@ -155,7 +155,7 @@ public class APItest extends BaseClass {
                     differenceRightSorted = removeRepeatingFlags(difference.entriesOnlyOnRight());
 
                     differenceRightSorted
-                            .forEach((key, value) -> logger.log(LogStatus.INFO, key));
+                            .forEach((key, value) -> logger.log(LogStatus.WARNING, key));
 
                     differenceRightSorted
                             .forEach((key, value) ->  System.out.println(key));
@@ -246,7 +246,7 @@ public class APItest extends BaseClass {
             System.out.println("********************************************************************************");
             logger.log(LogStatus.INFO, "********************************************************************************");
             System.out.println("The difference is " + difference);
-            logger.log(LogStatus.INFO, "The difference is " + difference);
+            logger.log(LogStatus.WARNING, "The difference is " + difference);
         }
 
     }
