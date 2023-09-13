@@ -74,7 +74,10 @@ public class UpdateResponses extends BaseClass {
             System.out.print(response.statusCode());
 
             String responseBody = response.getBody().asPrettyString();
+            if(cellER == null) {
+                cellER =  row.createCell(colMapByName.get("expected response").intValue());
 
+            }
             cellER.setCellValue(responseBody);
             DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
             Date date = new Date();
