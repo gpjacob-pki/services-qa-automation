@@ -8,6 +8,7 @@ import com.google.gson.reflect.TypeToken;
 import com.mongodb.util.JSON;
 import com.relevantcodes.extentreports.ExtentReports;
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import io.restassured.internal.path.json.JSONAssertion;
 import io.restassured.path.json.JsonPath;
 
@@ -17,6 +18,7 @@ import static io.restassured.matcher.RestAssuredMatchers.*;
 
 import io.restassured.response.Response;
 
+import io.restassured.specification.RequestSpecification;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -58,11 +60,8 @@ public class APItest extends BaseClass {
 
     ExtentTest logger;
 
-    @Test( dataProvider = "postAPIData")
-    public void apimethod(String BaseURI, String Method, String Header_Key, String status_code, String Name, String expectedResponse, String clientName , String lastautoupdate, String isAutoUpdate) throws IOException {
-
-
-
+    @Test(priority = 1, dataProvider = "postAPIData")
+    public void apimethod(String BaseURI, String Method, String Header_Key, String status_code, String Name, String expectedResponse, String clientName , String lastautoupdate, String isAutoUpdate, String jsonfilename, String bodyJson) throws Exception {
 
 
         SoftAssert softAssert = new SoftAssert();
@@ -85,8 +84,42 @@ public class APItest extends BaseClass {
 
         RestAssured.useRelaxedHTTPSValidation();
         System.out.println(Name);
-        //Response response = given().header(Header_Key, Header_Value).when().get().then().log().all().extract().response();
-        Response response = RestAssured.given().header(Header_Key, ConfigFileReader(Header_Key))
+
+        Response response;
+
+        if(!Method.equalsIgnoreCase("get")){
+           if(jsonfilename.equalsIgnoreCase("Yes")) {
+               response = RestAssured.given().header(Header_Key, ConfigFileReader(Header_Key))
+                       .header("Content-Type", "application/vnd.api+json")
+                       .header("Accept", "application/vnd.api+json")
+                       .body(bodyJson).
+                       when().
+                       post(base).
+                       then().
+                       log().
+                       all().extract().response();
+           } else {
+               bodyJson = readjsonfile(jsonfilename);
+               response = postData(base, ConfigFileReader(Header_Key),new HashMap<>(), bodyJson);
+           }
+
+           int statusCode = response.getStatusCode();
+
+           String responsebody = response.getBody().asPrettyString();
+
+           if(statusCode==statuscode){
+               logger.log(LogStatus.PASS, "The status code matches with the expected, the response code is "+statusCode);
+           } else {
+
+               System.out.println("The response code is "+statusCode);
+
+               logger.log(LogStatus.FAIL, "The http response code is "+statusCode);
+               logger.log(LogStatus.FAIL, "The error is "+responsebody);
+           }
+           return;
+       }
+
+        response = RestAssured.given().header(Header_Key, ConfigFileReader(Header_Key))
                 .when()
                 .get(BaseURI)
                 .then().log().all().extract().response();
@@ -566,8 +599,6 @@ public class APItest extends BaseClass {
     @DataProvider
     public String[][] postAPIData() throws IOException {
 
-        updateLatestResponses();
-
         String[][] testOBJArray = null;
 
         System.out.println("configfile reader value is :" + ConfigFileReader("runon"));
@@ -590,5 +621,22 @@ public class APItest extends BaseClass {
         }
 
         return testOBJArray;
+    }
+
+    public Response postData(String url, String api_key,Map<String, String> headers ,String body)
+    {
+        RequestSpecification request = RestAssured.given();
+        request.header("x-api-key", api_key);
+        // Add headers
+        for (Map.Entry<String, String> entry : headers.entrySet()) {
+            request.header(entry.getKey(), entry.getValue());
+        }
+
+        request.contentType(ContentType.JSON);
+        request.body(body);
+        Response response = request.post(url);
+
+
+        return response;
     }
 }
