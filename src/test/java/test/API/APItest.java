@@ -66,7 +66,15 @@ public class APItest extends BaseClass {
 
         SoftAssert softAssert = new SoftAssert();
 
-        String base = ConfigFileReader("URL") + BaseURI;
+        String URL;
+
+        if(clientName.equalsIgnoreCase("Internal")){
+           URL = ConfigFileReader("internalURL");
+        } else {
+            URL = ConfigFileReader("URL");
+        }
+
+        String base = URL + BaseURI;
 
         logger = extent.startTest(BaseURI);
 
@@ -76,8 +84,11 @@ public class APItest extends BaseClass {
 
         System.out.println("The base is :" + base);
 
-        RestAssured.baseURI = ConfigFileReader("URL") ;
-
+        if(clientName.equalsIgnoreCase("Internal")){
+            RestAssured.baseURI = ConfigFileReader("internalURL");
+        }else {
+            RestAssured.baseURI = ConfigFileReader("URL");
+        }
         logger.log(LogStatus.INFO,base);
 
         logger.log(LogStatus.INFO,"Header: " + Header_Key);
@@ -117,81 +128,82 @@ public class APItest extends BaseClass {
                logger.log(LogStatus.FAIL, "The error is "+responsebody);
            }
            return;
-       }
+       }else {
 
-        response = RestAssured.given().header(Header_Key, ConfigFileReader(Header_Key))
-                .when()
-                .get(BaseURI)
-                .then().log().all().extract().response();
+            response = RestAssured.given().header(Header_Key, ConfigFileReader(Header_Key))
+                    .when()
+                    .get(BaseURI)
+                    .then().log().all().extract().response();
 
-        int statusCode = response.getStatusCode();
-        Assert.assertEquals(statusCode, statuscode);
-        logger.log(LogStatus.PASS, "The clients using this API are " + clientName);
-        if (statusCode == statuscode) {
-            logger.log(LogStatus.PASS, "Response code is as expected: " + statusCode);
-        } else if (statusCode != statuscode) {
-            logger.log(LogStatus.FAIL, "The Response is not as expected, Getting error code as " + statusCode);
+            int statusCode = response.getStatusCode();
+            Assert.assertEquals(statusCode, statuscode);
+            logger.log(LogStatus.PASS, "The clients using this API are " + clientName);
+            if (statusCode == statuscode) {
+                logger.log(LogStatus.PASS, "Response code is as expected: " + statusCode);
+            } else if (statusCode != statuscode) {
+                logger.log(LogStatus.FAIL, "The Response is not as expected, Getting error code as " + statusCode);
 
-        }
-
-        //Validating whether the string is JSON or not
-        String responseBody = response.getBody().asPrettyString();
-        RestAssured.reset();
-        softAssert.assertEquals(isJsonString(responseBody), true);
-        Boolean flag = isJsonString(responseBody);
-
-        System.out.println("The response is Json " + flag);
-
-        logger.log(LogStatus.INFO, "The response is JSON");
-
-        //Assert.assertTrue(flag, "The response is not json");
-
-        //Comparing responses as JSON
-        if (flag) {
-            try {
-                Gson gson = new Gson();
-                JsonElement leftJsonElement = JsonParser.parseString(responseBody);
-                JsonElement rightJsonElement = JsonParser.parseString(expectedResponse);
-
-                if (leftJsonElement.isJsonObject() && rightJsonElement.isJsonObject()) {
-                    JsonObject leftJsonObject = leftJsonElement.getAsJsonObject();
-                    JsonObject rightJsonObject = rightJsonElement.getAsJsonObject();
-
-                    processObjects(leftJsonObject,rightJsonObject);
+            }
 
 
-                    Type type = new TypeToken<Map<String, Object>>() {
-                    }.getType();
+            //Validating whether the string is JSON or not
+            String responseBody = response.getBody().asPrettyString();
+            RestAssured.reset();
+            softAssert.assertEquals(isJsonString(responseBody), true);
+            Boolean flag = isJsonString(responseBody);
 
-                    Map<String, Object> leftMap = gson.fromJson(leftJsonObject, type);
-                    Map<String, Object> rightMap = gson.fromJson(rightJsonObject, type);
+            System.out.println("The response is Json " + flag);
+
+            logger.log(LogStatus.INFO, "The response is JSON");
+
+            //Assert.assertTrue(flag, "The response is not json");
+
+            //Comparing responses as JSON
+            if (flag) {
+                try {
+                    Gson gson = new Gson();
+                    JsonElement leftJsonElement = JsonParser.parseString(responseBody);
+                    JsonElement rightJsonElement = JsonParser.parseString(expectedResponse);
+
+                    if (leftJsonElement.isJsonObject() && rightJsonElement.isJsonObject()) {
+                        JsonObject leftJsonObject = leftJsonElement.getAsJsonObject();
+                        JsonObject rightJsonObject = rightJsonElement.getAsJsonObject();
+
+                        processObjects(leftJsonObject, rightJsonObject);
 
 
-                    Map<String, Object> leftFlatMap = FlatMapUtil.flatten(leftMap);
-                    Map<String, Object> rightFlatMap = FlatMapUtil.flatten(rightMap);
+                        Type type = new TypeToken<Map<String, Object>>() {
+                        }.getType();
 
-                    MapDifference<String, Object> difference = Maps.difference(leftFlatMap, rightFlatMap);
+                        Map<String, Object> leftMap = gson.fromJson(leftJsonObject, type);
+                        Map<String, Object> rightMap = gson.fromJson(rightJsonObject, type);
 
-                    System.out.println( "----------------\t Only in actual response\t----------------------------");
-                    logger.log(LogStatus.INFO, "----------------\t Only in actual response\t----------------------------");
-                    Map<String,Object> differenceLeftSorted =  new HashMap<String,Object>();
-                    differenceLeftSorted = removeRepeatingFlags(difference.entriesOnlyOnLeft());
-                    differenceLeftSorted
-                            .forEach((key, value) -> logger.log(LogStatus.WARNING, key));
 
-                    differenceLeftSorted
-                            .forEach((key, value) ->  System.out.println(key));
+                        Map<String, Object> leftFlatMap = FlatMapUtil.flatten(leftMap);
+                        Map<String, Object> rightFlatMap = FlatMapUtil.flatten(rightMap);
 
-                    System.out.println( "----------------\t Only in Expected response\t----------------------------");
-                    logger.log(LogStatus.INFO, "----------------\t Only in Expected response\t----------------------------");
-                    Map<String,Object> differenceRightSorted =  new HashMap<String,Object>();
-                    differenceRightSorted = removeRepeatingFlags(difference.entriesOnlyOnRight());
+                        MapDifference<String, Object> difference = Maps.difference(leftFlatMap, rightFlatMap);
 
-                    differenceRightSorted
-                            .forEach((key, value) -> logger.log(LogStatus.WARNING, key));
+                        System.out.println("----------------\t Only in actual response\t----------------------------");
+                        logger.log(LogStatus.INFO, "----------------\t Only in actual response\t----------------------------");
+                        Map<String, Object> differenceLeftSorted = new HashMap<String, Object>();
+                        differenceLeftSorted = removeRepeatingFlags(difference.entriesOnlyOnLeft());
+                        differenceLeftSorted
+                                .forEach((key, value) -> logger.log(LogStatus.WARNING, key));
 
-                    differenceRightSorted
-                            .forEach((key, value) ->  System.out.println(key));
+                        differenceLeftSorted
+                                .forEach((key, value) -> System.out.println(key));
+
+                        System.out.println("----------------\t Only in Expected response\t----------------------------");
+                        logger.log(LogStatus.INFO, "----------------\t Only in Expected response\t----------------------------");
+                        Map<String, Object> differenceRightSorted = new HashMap<String, Object>();
+                        differenceRightSorted = removeRepeatingFlags(difference.entriesOnlyOnRight());
+
+                        differenceRightSorted
+                                .forEach((key, value) -> logger.log(LogStatus.WARNING, key));
+
+                        differenceRightSorted
+                                .forEach((key, value) -> System.out.println(key));
 
                    /* System.out.println("Entries only on the actual response\n--------------------------");
                     logger.log(LogStatus.INFO, "Entries only on the actual response\n--------------------------");
@@ -214,25 +226,24 @@ public class APItest extends BaseClass {
                     difference.entriesDiffering()
                             .forEach((key, value) -> logger.log(LogStatus.INFO, key + ": " + value));*/
 
-                }
-                else if (leftJsonElement.isJsonArray() && rightJsonElement.isJsonArray()) {
-                    JsonArray leftJsonArray = leftJsonElement.getAsJsonArray();
-                    JsonArray rightJsonArray = rightJsonElement.getAsJsonArray();
+                    } else if (leftJsonElement.isJsonArray() && rightJsonElement.isJsonArray()) {
+                        JsonArray leftJsonArray = leftJsonElement.getAsJsonArray();
+                        JsonArray rightJsonArray = rightJsonElement.getAsJsonArray();
 
-                    JsonObject leftJsonObject =  new JsonObject();
-                    leftJsonObject.add("",leftJsonArray);
+                        JsonObject leftJsonObject = new JsonObject();
+                        leftJsonObject.add("", leftJsonArray);
 
-                    JsonObject rightJsonObject =  new JsonObject();
-                    rightJsonObject.add("",rightJsonArray);
+                        JsonObject rightJsonObject = new JsonObject();
+                        rightJsonObject.add("", rightJsonArray);
 
-                    processObjects(leftJsonObject,rightJsonObject);
+                        processObjects(leftJsonObject, rightJsonObject);
 
-                    getDifferencesFromObject(leftJsonObject,rightJsonObject);
+                        getDifferencesFromObject(leftJsonObject, rightJsonObject);
 
-                    return;
+                        return;
 
 
-                    // Handle JSON arrays comparison
+                        // Handle JSON arrays comparison
                    /* for (int i = 0; i < leftJsonArray.size() && i < rightJsonArray.size(); i++) {
                         JsonElement leftElement = leftJsonArray.get(i);
                         JsonElement rightElement = rightJsonArray.get(i);
@@ -262,27 +273,29 @@ public class APItest extends BaseClass {
                             logger.log(LogStatus.INFO, "\n\nEntries only on the expected response\n--------------------------");
                         }
                     });*/
-                } else {
-                    System.out.println("Invalid JSON input");
+                    } else {
+                        System.out.println("Invalid JSON input");
 
+                    }
+                } catch (JsonSyntaxException e) {
+
+                    System.out.println("There is some issue in the JSON");
+                    logger.log(LogStatus.ERROR, "Not a valid json");
                 }
-            } catch (JsonSyntaxException e) {
 
-                System.out.println("There is some issue in the JSON");
-                logger.log(LogStatus.ERROR, "Not a valid json");
+
+            } else {
+                softAssert.assertTrue(responseBody.equals(expectedResponse));
+                String difference = StringUtils.difference(responseBody, expectedResponse);
+                System.out.println("********************************************************************************");
+                logger.log(LogStatus.INFO, "********************************************************************************");
+                System.out.println("The difference is " + difference);
+                logger.log(LogStatus.INFO, "The difference is " + difference);
             }
-
-
-        } else {
-            softAssert.assertTrue(responseBody.equals(expectedResponse));
-            String difference = StringUtils.difference(responseBody, expectedResponse);
-            System.out.println("********************************************************************************");
-            logger.log(LogStatus.INFO, "********************************************************************************");
-            System.out.println("The difference is " + difference);
-            logger.log(LogStatus.WARNING, "The difference is " + difference);
         }
 
     }
+
 
 
 
@@ -383,7 +396,7 @@ public class APItest extends BaseClass {
         logger.log(LogStatus.INFO, "----------------\t Only in actual response\t----------------------------");
         System.out.println( "----------------\t Only in actual response\t----------------------------");
         differenceLeftSorted
-                .forEach((key, value) -> logger.log(LogStatus.INFO, key));
+                .forEach((key, value) -> logger.log(LogStatus.WARNING, key));
 
 
         differenceLeftSorted
@@ -395,7 +408,7 @@ public class APItest extends BaseClass {
         differenceRightSorted = removeRepeatingFlags(difference.entriesOnlyOnRight());
 
         differenceRightSorted
-                .forEach((key, value) -> logger.log(LogStatus.INFO, key));
+                .forEach((key, value) -> logger.log(LogStatus.WARNING, key));
 
         differenceRightSorted
                 .forEach((key, value) ->  System.out.println(key));
